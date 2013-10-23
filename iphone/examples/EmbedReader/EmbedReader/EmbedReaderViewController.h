@@ -16,7 +16,7 @@
     ZBarCameraSimulator *cameraSim;
 }
 
-@property (nonatomic, retain) IBOutlet ZBarReaderView *readerView;
-@property (nonatomic, retain) IBOutlet UITextView *resultText;
+@property (nonatomic, retain) ZBarReaderView *readerView;
+@property (nonatomic, retain) UITextView *resultText;
 
 @end

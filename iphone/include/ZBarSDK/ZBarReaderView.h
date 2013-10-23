@@ -42,27 +42,38 @@
 // a complete video capture session feeding a ZBarCaptureReader and
 // presents the associated preview with symbol tracking annotations.
 
+@interface ZBarCropMaskLayer : CALayer
+{
+    CGFloat offsetX;
+}
+
+@property (assign, nonatomic) CGRect hollowRect;
+@property (strong, nonatomic) NSTimer* timer;
+
+@end
+
 @interface ZBarReaderView
     : UIView
 {
     id<ZBarReaderViewDelegate> readerDelegate;
-    ZBarCaptureReader *captureReader;
-    CGRect scanCrop, effectiveCrop;
-    CGAffineTransform previewTransform;
-    CGFloat zoom, zoom0, maxZoom;
-    UIColor *trackingColor;
-    BOOL tracksSymbols, showsFPS;
-    NSInteger torchMode;
-    UIInterfaceOrientation interfaceOrientation;
-    NSTimeInterval animationDuration;
+    ZBarCaptureReader *captureReader;           // 设备流处理
+    CGRect scanCrop, effectiveCrop;             // 扫描的裁切区域，有效的裁切区域
+    CGAffineTransform previewTransform;         // 预览的变换
+    CGFloat zoom, zoom0, maxZoom;               // 缩放率，最小和最大
+    UIColor *trackingColor;                     // 有效区域跟踪的颜色
+    BOOL tracksSymbols, showsFPS;               // 是否显示跟踪区域，是否显示刷新率
+    NSInteger torchMode;                        // 闪光灯模式
+    UIInterfaceOrientation interfaceOrientation;// 屏幕的朝向
+    NSTimeInterval animationDuration;           // 动画的时长
 
-    CALayer *preview, *overlay, *tracking, *cropLayer;
-    UIView *fpsView;
-    UILabel *fpsLabel;
-    UIPinchGestureRecognizer *pinch;
-    CGFloat imageScale;
-    CGSize imageSize;
-    BOOL started, running;
+    ZBarCropMaskLayer* overlay;
+    CALayer *preview, *tracking, *cropLayer;      // 预览层,覆盖层,跟踪层,裁剪层
+    UIView *fpsView;                            // 刷新率视图
+    UILabel *fpsLabel;                          // 刷新率标签
+    UIPinchGestureRecognizer *pinch;            // 捏合手势
+    CGFloat imageScale;                         // 图片的比例
+    CGSize imageSize;                           // 图片尺寸（摄像头采样的大小）
+    BOOL started, running;                      // 是否开始，是否在运行
 }
 
 // supply a pre-configured image scanner.

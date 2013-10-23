@@ -31,9 +31,26 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
-
+    
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+    {
+        [self setWantsFullScreenLayout:YES];
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+        [self.view setFrame:CGRectMake(0, 0, size.width, size.height)];
+    }
+    
+    readerView = [[ZBarReaderView alloc] init];
+    [self.view addSubview:readerView];
+    
     // the delegate receives decode results
     readerView.readerDelegate = self;
+    
+    // 可能是因为坐标系的不同，导致设置存在问题
+    [readerView setScanCrop:CGRectMake(.15, .15, .5, .7)];
+    [readerView setShowsFPS:YES];
+    [readerView setAllowsPinchZoom:NO];
 
     // you can use this to support the simulator
     if(TARGET_IPHONE_SIMULATOR) {
@@ -41,6 +58,14 @@
                         initWithViewController: self];
         cameraSim.readerView = readerView;
     }
+    
+    [readerView setFrame:CGRectMake(0, 0, size.width, size.height)];
+    
+    resultText = [[UITextView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:resultText];
+    resultText.textColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+    resultText.backgroundColor = [UIColor clearColor];
+    [resultText setFrame:CGRectMake(0, size.height - 32, size.width, 32)];
 }
 
 - (void) viewDidUnload

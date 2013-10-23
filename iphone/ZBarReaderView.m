@@ -26,6 +26,126 @@
 #define MODULE ZBarReaderView
 #import "debug.h"
 
+@implementation ZBarCropMaskLayer
+
+@synthesize timer = _timer;
+@synthesize hollowRect = _hollowRect;
+
+- (id) init
+{
+    self = [super init];
+    if (self)
+    {
+        _timer = [NSTimer timerWithTimeInterval:.01 target:self selector:@selector(onTimer) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSDefaultRunLoopMode];
+        offsetX = 10;
+        
+    }
+    return self;
+}
+
+- (void) drawInContext:(CGContextRef)ctx
+{
+    CGRect rect = self.hollowRect;
+    
+    // draw four rect around the crop area, appear a hollow effective
+    CGContextSetFillColorWithColor(ctx, [UIColor colorWithWhite:.0 alpha:.6].CGColor);
+    
+    CGFloat x = rect.origin.x;
+    CGFloat y = rect.origin.y;
+    CGFloat w = rect.size.width;
+    CGFloat h = rect.size.height;
+    
+    CGFloat fw = self.bounds.size.width;
+    CGFloat fh = self.bounds.size.height;
+    
+    CGContextAddRect(ctx, CGRectMake(0, 0, fw, y));
+    CGContextAddRect(ctx, CGRectMake(0, y, x, h));
+    CGContextAddRect(ctx, CGRectMake(x + w, y, fw - x - w, h));
+    CGContextAddRect(ctx, CGRectMake(0, y + h, fw, fh - y - h));
+    
+    CGContextFillPath(ctx);
+    CGContextStrokePath(ctx);
+    
+    // draw four corner
+    CGFloat s = 26;
+    CGFloat f = 5;
+    
+    CGContextSetFillColorWithColor(ctx, [UIColor colorWithRed:0 green:1 blue:0 alpha:1.0].CGColor);
+    
+    CGPoint c = CGPointMake(x, y);
+    CGContextMoveToPoint(ctx, c.x, c.y);
+    CGContextAddLineToPoint(ctx, c.x + s, c.y);
+    CGContextAddLineToPoint(ctx, c.x + s, c.y + f);
+    CGContextAddLineToPoint(ctx, c.x + f, c.y + f);
+    CGContextAddLineToPoint(ctx, c.x + f, c.y + s);
+    CGContextAddLineToPoint(ctx, c.x, c.y + s);
+    CGContextAddLineToPoint(ctx, c.x, c.y);
+    CGContextFillPath(ctx);
+    CGContextStrokePath(ctx);
+    
+    c = CGPointMake(x, y + h);
+    CGContextMoveToPoint(ctx, c.x, c.y);
+    CGContextAddLineToPoint(ctx, c.x + s, c.y);
+    CGContextAddLineToPoint(ctx, c.x + s, c.y - f);
+    CGContextAddLineToPoint(ctx, c.x + f, c.y - f);
+    CGContextAddLineToPoint(ctx, c.x + f, c.y - s);
+    CGContextAddLineToPoint(ctx, c.x, c.y - s);
+    CGContextAddLineToPoint(ctx, c.x, c.y);
+    CGContextFillPath(ctx);
+    CGContextStrokePath(ctx);
+    
+    
+    c = CGPointMake(x + w, y);
+    CGContextMoveToPoint(ctx, c.x, c.y);
+    CGContextAddLineToPoint(ctx, c.x - s, c.y);
+    CGContextAddLineToPoint(ctx, c.x - s, c.y + f);
+    CGContextAddLineToPoint(ctx, c.x - f, c.y + f);
+    CGContextAddLineToPoint(ctx, c.x - f, c.y + s);
+    CGContextAddLineToPoint(ctx, c.x, c.y + s);
+    CGContextAddLineToPoint(ctx, c.x, c.y);
+    CGContextFillPath(ctx);
+    CGContextStrokePath(ctx);
+    
+    c = CGPointMake(x + w, y + h);
+    CGContextMoveToPoint(ctx, c.x, c.y);
+    CGContextAddLineToPoint(ctx, c.x - s, c.y);
+    CGContextAddLineToPoint(ctx, c.x - s, c.y - f);
+    CGContextAddLineToPoint(ctx, c.x - f, c.y - f);
+    CGContextAddLineToPoint(ctx, c.x - f, c.y - s);
+    CGContextAddLineToPoint(ctx, c.x, c.y - s);
+    CGContextAddLineToPoint(ctx, c.x, c.y);
+    CGContextFillPath(ctx);
+    CGContextStrokePath(ctx);
+    
+    CGContextFillPath(ctx);
+    CGContextStrokePath(ctx);
+    
+    CGRect ovalRect = CGRectInset(CGRectMake(x + offsetX, y, 2, h), 0, 5);
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:ovalRect];
+    CGContextAddPath(ctx, path.CGPath);
+    CGContextSetRGBFillColor(ctx, 0, 1, 0, .8f);
+    CGContextSetShadowWithColor(ctx, CGSizeMake(1.0f, 1.0f), 0.f, [[UIColor colorWithRed:0 green:1 blue:0 alpha:.8f] CGColor]);
+    CGContextEOFillPath(ctx);
+}
+
+- (void) onTimer
+{
+    NSLog(@"enter onTimer");
+    
+    if (offsetX <= (_hollowRect.size.width - 10))
+    {
+        offsetX += 2;
+    }
+    else
+    {
+        offsetX = 10;
+    }
+    [self setNeedsDisplayInRect:CGRectInset(_hollowRect, 5, 5)];
+}
+
+@end
+
 // silence warning
 @interface ZBarReaderViewImpl : NSObject
 @end
@@ -41,7 +161,7 @@
     if(self == [ZBarReaderView class]) {
         // this is an abstract wrapper for implementation selected
         // at compile time.  replace with concrete subclass.
-        return([ZBarReaderViewImpl alloc]);
+        return ([ZBarReaderViewImpl alloc]);
     }
     return([super alloc]);
 }
@@ -50,21 +170,24 @@
 {
     assert(preview);
 
-    overlay = [CALayer new];
+    overlay = [ZBarCropMaskLayer new];
     overlay.backgroundColor = [UIColor clearColor].CGColor;
     [preview addSublayer: overlay];
 
 #ifndef NDEBUG
     overlay.borderWidth = 2;
-    overlay.borderColor = [UIColor colorWithRed: 1
+    overlay.borderColor = [UIColor colorWithRed: 0
                                    green: 0
-                                   blue: 0
+                                   blue: 1
                                    alpha: .5].CGColor;
+    
+    [overlay.timer fire];
+
     cropLayer = [CALayer new];
     cropLayer.backgroundColor = [UIColor clearColor].CGColor;
-    cropLayer.borderWidth = 2;
-    cropLayer.borderColor = [UIColor colorWithRed: 0
-                                     green: 0
+    cropLayer.borderWidth = .5;
+    cropLayer.borderColor = [UIColor colorWithRed: 1
+                                     green: 1
                                      blue: 1
                                      alpha: .5].CGColor;
     [overlay addSublayer: cropLayer];
@@ -79,7 +202,12 @@
     trackingColor = [[UIColor greenColor]
                         retain];
     tracking.borderColor = trackingColor.CGColor;
-
+    
+    
+//    cropMaskView = [ZBarCropMaskView new];
+//    cropMaskView.backgroundColor = [UIColor clearColor];
+//    [self addSubview:cropMaskView];
+    
     fpsView = [UIView new];
     fpsView.backgroundColor = [UIColor colorWithWhite: 0
                                        alpha: .333];
@@ -98,7 +226,8 @@
     fpsLabel.textAlignment = UITextAlignmentRight;
     [fpsView addSubview: fpsLabel];
 
-    self.zoom = 1.25;
+//    self.zoom = 1.25;
+    self.zoom = 1.0;
 }
 
 - (void) _initWithImageScanner: (ZBarImageScanner*) scanner
@@ -220,13 +349,13 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
     switch(orient)
     {
     case UIInterfaceOrientationLandscapeLeft:
-        return(M_PI_2);
+        return(M_PI_2);         // 90度
     case UIInterfaceOrientationPortraitUpsideDown:
-        return(M_PI);
+        return(M_PI);           // 180度
     case UIInterfaceOrientationLandscapeRight:
-        return(3 * M_PI_2);
+        return(3 * M_PI_2);     // 270度
     case UIInterfaceOrientationPortrait:
-        return(2 * M_PI);
+        return(2 * M_PI);       // 360度
     }
     return(0);
 }
@@ -237,6 +366,7 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
     if(!bounds.size.width || !bounds.size.height)
         return;
 
+    // 如果需要变更，则设置动画的变换效果
     [CATransaction begin];
     if(animationDuration) {
         [CATransaction setAnimationDuration: animationDuration];
@@ -248,9 +378,13 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
         [CATransaction setDisableActions: YES];
 
     [super layoutSubviews];
+    
+    // 布局fps的位置
     fpsView.frame = CGRectMake(bounds.size.width - 80, bounds.size.height - 32,
                                80 + 12, 32 + 12);
 
+    // 调整视图的坐标系适配相机的坐标系（相机的坐标系默认是横屏）
+    // 如果是竖屏，就把宽高互换
     // orient view bounds to match camera image
     CGSize psize;
     if(UIInterfaceOrientationIsPortrait(interfaceOrientation))
@@ -258,6 +392,7 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
     else
         psize = bounds.size;
 
+    // 计算图片的缩放比例（涉及到展示区域的大小与摄像头采样的大小）
     // calculate scale from view coordinates to image coordinates
     // FIXME assumes AVLayerVideoGravityResizeAspectFill
     CGFloat scalex = imageSize.width / psize.width;
@@ -277,6 +412,7 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
                    scanCrop.size.width * z,
                    scanCrop.size.height * z);
 
+    // 根据视图大小计算采样到的图片
     // convert effective preview area to normalized image coordinates
     CGRect previewCrop;
     if(scalex < scaley && imageSize.height)
@@ -301,11 +437,13 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
         psize = CGSizeMake(imageSize.width * viewScale,
                            imageSize.height * viewScale);
 
+    //
     preview.bounds = CGRectMake(0, 0, psize.height, psize.width);
     // center preview in view
     preview.position = CGPointMake(bounds.size.width / 2,
                                    bounds.size.height / 2);
 
+    // 判断是否需要对预览视图作旋转
     CGFloat angle = rotationForInterfaceOrientation(interfaceOrientation);
     CATransform3D xform =
         CATransform3DMakeAffineTransform(previewTransform);
@@ -313,33 +451,48 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
 
     // scale overlay to match actual image
     if(imageSize.width && imageSize.height)
+    {
         overlay.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
+    }
     else
+    {
         overlay.bounds = CGRectMake(0, 0, psize.width, psize.height);
+    }
     // center overlay in preview
     overlay.position = CGPointMake(psize.height / 2, psize.width / 2);
 
     // image coordinates rotated from preview
     xform = CATransform3DMakeRotation(M_PI_2, 0, 0, 1);
     overlay.transform = CATransform3DScale(xform, viewScale, viewScale, 1);
+    
     tracking.borderWidth = imageScale;
 
 #ifndef NDEBUG
     preview.backgroundColor = [UIColor yellowColor].CGColor;
     overlay.borderWidth = 2 * imageScale;
-    cropLayer.borderWidth = 2 * imageScale;
+//    cropLayer.borderWidth = 2 * imageScale;
     cropLayer.frame = CGRectMake(effectiveCrop.origin.x * imageSize.width,
                                  effectiveCrop.origin.y * imageSize.height,
                                  effectiveCrop.size.width * imageSize.width,
                                  effectiveCrop.size.height * imageSize.height);
-    zlog(@"layoutSubviews: bounds=%@ orient=%d image=%@ crop=%@ zoom=%g\n"
-         @"=> preview=%@ crop=(z%@ p%@ %@ i%@) scale=%g %c %g = 1/%g",
+    
+    [overlay setHollowRect:cropLayer.frame];
+    [overlay setNeedsDisplay];
+    
+//    [(ZBarCropMaskView*)cropMaskView setHollowRect:cropLayer.frame];
+//    
+//    [cropMaskView setFrame:self.bounds];
+//    cropMaskView.transform = CGAffineTransformMakeRotation(M_PI / 2);
+//    [cropMaskView setNeedsDisplay];
+    
+    zlog(@"layoutSubviews: bounds=%@ orient=%d image=%@ crop=%@ zoom=%g"
+         @"=> preview=%@ crop=(z%@ p%@ %@ i%@) scale=%g %c %g = 1/%g overlay=%@",
          NSStringFromCGSize(bounds.size), interfaceOrientation,
          NSStringFromCGSize(imageSize), NSStringFromCGRect(scanCrop), zoom,
          NSStringFromCGSize(psize), NSStringFromCGRect(zoomCrop),
          NSStringFromCGRect(previewCrop), NSStringFromCGRect(effectiveCrop),
          NSStringFromCGRect(cropLayer.frame),
-         scalex, (scalex > scaley) ? '>' : '<', scaley, viewScale);
+         scalex, (scalex > scaley) ? '>' : '<', scaley, viewScale, NSStringFromCGRect(overlay.frame));
 #endif
 
     [self resetTracking];
