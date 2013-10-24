@@ -43,12 +43,8 @@
 // presents the associated preview with symbol tracking annotations.
 
 @interface ZBarCropMaskLayer : CALayer
-{
-    CGFloat offsetX;
-}
 
 @property (assign, nonatomic) CGRect hollowRect;
-@property (strong, nonatomic) NSTimer* timer;
 
 @end
 
