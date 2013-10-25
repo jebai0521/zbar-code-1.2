@@ -229,6 +229,12 @@ const unsigned char lineImagebytes[] = {
 - (void) setHollowRect:(CGRect)hollowRect
 {
     _hollowRect = hollowRect;
+    
+    if (CGRectEqualToRect(hollowRect, CGRectZero))
+    {
+        return;
+    }
+    
     [lineLayer setFrame:CGRectMake(_hollowRect.origin.x + offsetX, _hollowRect.origin.y, LineHeight, _hollowRect.size.height)];
     
     NSLog(@"enter setHollowRect %@", NSStringFromCGRect(_hollowRect));
@@ -255,6 +261,12 @@ const unsigned char lineImagebytes[] = {
 - (void) drawInContext:(CGContextRef)ctx
 {
     CGRect rect = self.hollowRect;
+    
+    if (CGRectEqualToRect(_hollowRect, CGRectZero))
+    {
+        return;
+    }
+    
     
     // draw four rect around the crop area, appear a hollow effective
     CGContextSetFillColorWithColor(ctx, [UIColor colorWithWhite:.0 alpha:.6].CGColor);
@@ -368,12 +380,12 @@ const unsigned char lineImagebytes[] = {
     overlay.backgroundColor = [UIColor clearColor].CGColor;
     [preview addSublayer: overlay];
 
-#ifndef NDEBUG
-    overlay.borderWidth = 2;
-    overlay.borderColor = [UIColor colorWithRed: 0
-                                   green: 0
-                                   blue: 1
-                                   alpha: .5].CGColor;
+//#ifndef NDEBUG
+//    overlay.borderWidth = 2;
+//    overlay.borderColor = [UIColor colorWithRed: 0
+//                                   green: 0
+//                                   blue: 1
+//                                   alpha: .5].CGColor;
 
     cropLayer = [CALayer new];
     cropLayer.backgroundColor = [UIColor clearColor].CGColor;
@@ -383,7 +395,7 @@ const unsigned char lineImagebytes[] = {
                                      blue: 1
                                      alpha: .5].CGColor;
     [overlay addSublayer: cropLayer];
-#endif
+//#endif
 
     tracking = [CALayer new];
     tracking.opacity = 0;
@@ -659,9 +671,9 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
     
     tracking.borderWidth = imageScale;
 
-#ifndef NDEBUG
-    preview.backgroundColor = [UIColor yellowColor].CGColor;
-    overlay.borderWidth = 2 * imageScale;
+//#ifndef NDEBUG
+    preview.backgroundColor = [UIColor blackColor].CGColor;
+//    overlay.borderWidth = 2 * imageScale;
 //    cropLayer.borderWidth = 2 * imageScale;
     cropLayer.frame = CGRectMake(effectiveCrop.origin.x * imageSize.width,
                                  effectiveCrop.origin.y * imageSize.height,
@@ -685,7 +697,7 @@ static inline CGFloat rotationForInterfaceOrientation (int orient)
          NSStringFromCGRect(previewCrop), NSStringFromCGRect(effectiveCrop),
          NSStringFromCGRect(cropLayer.frame),
          scalex, (scalex > scaley) ? '>' : '<', scaley, viewScale, NSStringFromCGRect(overlay.frame));
-#endif
+//#endif
 
     [self resetTracking];
     [self updateCrop];
