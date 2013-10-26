@@ -1,0 +1,14 @@
+
+*.d
+
+*.o
+
+iphone/build/zbar.build/Debug-iphoneos/libzbar.build/Objects-normal/armv7/ZBarCVImage.d
+
+iphone/build/zbar.build/Debug-iphoneos/libzbar.build/Objects-normal/armv7/ZBarCVImage.o
+
+iphone/build/zbar.build/Debug-iphoneos/libzbar.build/Objects-normal/armv7/ZBarCVImage.d
+
+*.d
+
+*.a

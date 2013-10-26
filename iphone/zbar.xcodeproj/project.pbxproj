@@ -151,7 +151,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		DC3CEE811215C7EF00D7A786 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = Headers/ZBarSDK;
 			dstSubfolderSpec = 1;
 			files = (
@@ -168,11 +168,11 @@
 				DC3CEE921215C93200D7A786 /* zbar.h in Copy Headers */,
 			);
 			name = "Copy Headers";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		DC3CEE9E1215C9B800D7A786 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = Headers/ZBarSDK/zbar;
 			dstSubfolderSpec = 1;
 			files = (
@@ -187,11 +187,11 @@
 				DC3CEE9C1215C97F00D7A786 /* Window.h in Copy Headers */,
 			);
 			name = "Copy Headers";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		DC3CEE9F1215C9B800D7A786 /* Copy Resources */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = Resources;
 			dstSubfolderSpec = 1;
 			files = (
@@ -201,7 +201,7 @@
 				DC3CEEA21215C9C000D7A786 /* zbar-samples.png in Copy Resources */,
 			);
 			name = "Copy Resources";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		DC3CF025121720B600D7A786 /* Copy Examples */ = {
 			isa = PBXCopyFilesBuildPhase;
