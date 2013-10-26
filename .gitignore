@@ -12,3 +12,9 @@ iphone/build/zbar.build/Debug-iphoneos/libzbar.build/Objects-normal/armv7/ZBarCV
 *.d
 
 *.a
+
+iphone/build/zbar.build/Release-iphonesimulator/libzbar.build/libzbar.dep
+
+iphone/build/zbar.build/Release-iphonesimulator/libzbar.build/libzbar.dep
+
+*.dat

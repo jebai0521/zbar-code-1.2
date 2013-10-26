@@ -1,3 +1,3 @@
 dependencies: \
-  /Users/mingchen/Documents/workspace/zbar/code/zbar-code-1ad84c3c03252c366a82552fa952674ec593c73f/zbar/qrcode/rs.c \
-  /Users/mingchen/Documents/workspace/zbar/code/zbar-code-1ad84c3c03252c366a82552fa952674ec593c73f/zbar/qrcode/rs.h
+  /Users/mingchen/Documents/workspace/zbar/code/zbar-code-1.2/zbar/qrcode/rs.c \
+  /Users/mingchen/Documents/workspace/zbar/code/zbar-code-1.2/zbar/qrcode/rs.h
