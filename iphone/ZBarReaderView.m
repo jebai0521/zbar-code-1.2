@@ -175,22 +175,26 @@ const unsigned char lineImagebytes[] = {
     0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
 };
 
+/*
 @interface ZBarCropMaskLayer ()
-{
+{    
     CALayer* lineLayer;
     CGFloat step;
     CGFloat offsetX;
 }
-
+ 
 @property (strong, nonatomic) CADisplayLink* timer;
 
 @end
+ */
 
 #define LineHeight 13.0f
 
 @implementation ZBarCropMaskLayer
 
+/*
 @synthesize timer = _timer;
+ */
 @synthesize hollowRect = _hollowRect;
 
 - (id) init
@@ -198,23 +202,26 @@ const unsigned char lineImagebytes[] = {
     self = [super init];
     if (self)
     {
+        /*
         _timer = [CADisplayLink displayLinkWithTarget:self selector:@selector(onTimer)];
         [_timer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         
         offsetX = 0;
         step = 0;
         UIImage* image = [[UIImage imageWithData:[NSData dataWithBytes:lineImagebytes length:sizeof(lineImagebytes)]] retain];
-        
+         
         lineLayer = [CALayer new];
         [lineLayer setBackgroundColor:[UIColor colorWithRed:1 green:0 blue:0 alpha:.5].CGColor];
         [lineLayer setBackgroundColor:[UIColor clearColor].CGColor];
         [lineLayer setContents:(id)[image CGImage]];
+         */
     }
     return self;
 }
 
 - (void) dealloc
 {
+    /*
     [_timer invalidate];
     [_timer release];
     _timer = nil;
@@ -222,6 +229,7 @@ const unsigned char lineImagebytes[] = {
     [lineLayer removeFromSuperlayer];
     [lineLayer release];
     lineLayer = nil;
+     */
     
     [super dealloc];
 }
@@ -234,14 +242,16 @@ const unsigned char lineImagebytes[] = {
     {
         return;
     }
-    
+    /*
     [lineLayer setFrame:CGRectMake(_hollowRect.origin.x + offsetX, _hollowRect.origin.y, LineHeight, _hollowRect.size.height)];
     
     NSLog(@"enter setHollowRect %@", NSStringFromCGRect(_hollowRect));
     step = 1;
-    [self addSublayer:lineLayer];
+     [self addSublayer:lineLayer];
+     */
 }
 
+/*
 - (void) onTimer
 {
     if (offsetX >= _hollowRect.size.width)
@@ -257,16 +267,21 @@ const unsigned char lineImagebytes[] = {
     
     [lineLayer setFrame:CGRectMake(_hollowRect.origin.x + offsetX, _hollowRect.origin.y, LineHeight, _hollowRect.size.height)];
 }
+ */
 
 - (void) drawInContext:(CGContextRef)ctx
 {
+    if (!ctx)
+    {
+        return;
+    }
+    
     CGRect rect = self.hollowRect;
     
     if (CGRectEqualToRect(_hollowRect, CGRectZero))
     {
         return;
     }
-    
     
     // draw four rect around the crop area, appear a hollow effective
     CGContextSetFillColorWithColor(ctx, [UIColor colorWithWhite:.0 alpha:.6].CGColor);
