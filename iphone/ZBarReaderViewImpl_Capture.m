@@ -237,9 +237,13 @@
     if(!started)
         return;
     [super stop];
-
+    
     captureReader.enableReader = NO;
     [session stopRunning];
+    
+    [session removeOutput:captureReader.captureOutput];
+    [session removeInput:input];
+    [preview removeFromSuperlayer];
 }
 
 - (void) flushCache
